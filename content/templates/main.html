@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>증상 선택 화면</title>
+    {{ symptoms_data|json_script:"shoes_data" }}
+    {% csrf_token %}
+    <script type="text/javascript">
+        const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        var position = null;
+        function init()
+        {
+            window.navigator.geolocation.getCurrentPosition(call_back_success);
+        }
+        
+        function call_back_success(pos)
+        {
+            position = [pos.coords.latitude,pos.coords.longitude];
+        }
+
+        // function call_back_failed(){
+        // }
+        window.addEventListener("load", init);
+
+        function moddiv(){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'question' %}", true);
+            
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader('X-CSRFToken', csrf_token);
+            xhr.onreadystatechange = function (e) {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    res = JSON.parse(xhr.responseText);
+                    document.getElementById('question').innerHTML = res['html'];
+                }
+            };
+
+            radios = document.getElementsByName('option');
+
+            idx = -1;
+            for(let i=0;i<radios.length;i++)
+            {
+                if(radios[i].checked){
+                    idx = i;
+                }
+            }
+            console.log(idx)
+            if(idx == -1) return;
+            post_context = {
+                'question':'hello man',
+                'answer':document.getElementsByName('option')[idx]
+            }
+
+            xhr.send(JSON.stringify(post_context));
+        }
+    </script>
+</head>
+<body>
+    <!-- <select id="" onchange="">
+        {% for p,p_kr in parts%}
+            <option value="{{p}}">{{p_kr}}</option>
+        {% endfor %}
+    </select>
+    <input type="text" value="">
+    <input type="button" value="찾기" onclick=""> -->
+
+    <div id='question'>
+        <p>
+            최근 변을 본 기간은?
+        </p>
+        <input type="radio" name="option" value="1일"> 1일 
+        <input type="radio" name="option" value="2-3일"> 2일 
+        <input type="radio" name="option" value="3일 초과"> 3일 
+        <br>
+    </div>
+    <div id='n_q'>
+        <input type="button" value="go" onclick="moddiv()">
+    </div>
+
+</body>
+</html>
