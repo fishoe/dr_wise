@@ -1,6 +1,6 @@
 <p>
     {{ question }}
 </p>
-{% for i in answer %}
-    <input type="radio" value="{{i}}">{{i}}</option>
+{% for a,v in answer %}
+    <input type="radio" name='option' value="{{v}}">{{a}}
 {% endfor %}

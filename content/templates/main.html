@@ -45,38 +45,57 @@
                     idx = i;
                 }
             }
-            console.log(idx)
             if(idx == -1) return;
-            post_context = {
-                'question':'hello man',
-                'answer':document.getElementsByName('option')[idx]
+            if(radios[idx].value[0]=='a')
+            {
+                var form = document.getElementById("forsend");
+                form.setAttribute("method", "POST");    
+            
+                //히든으로 값을 주입시킨다.
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                hiddenField.setAttribute("name", 'pos');
+                hiddenField.setAttribute("value", position);
+                form.appendChild(hiddenField);
+
+                attrs = radios[idx].value.substr(1).split('_')
+
+                var hiddenField2 = document.createElement("input");
+                hiddenField2.setAttribute("type", "hidden");
+                hiddenField2.setAttribute("name", 'clCd');
+                hiddenField2.setAttribute("value", attrs[0]);
+                form.appendChild(hiddenField2);
+
+                var hiddenField3 = document.createElement("input");
+                hiddenField3.setAttribute("type", "hidden");
+                hiddenField3.setAttribute("name", 'dgsbjtCd');
+                hiddenField3.setAttribute("value", attrs[1]);
+                form.appendChild(hiddenField3);
+
+                document.body.appendChild(form);
+                form.submit();
+                return;
             }
 
+            post_context = {
+                'answer':document.getElementsByName('option')[idx].value.substr(1)
+            }
             xhr.send(JSON.stringify(post_context));
         }
     </script>
 </head>
 <body>
-    <!-- <select id="" onchange="">
-        {% for p,p_kr in parts%}
-            <option value="{{p}}">{{p_kr}}</option>
-        {% endfor %}
-    </select>
-    <input type="text" value="">
-    <input type="button" value="찾기" onclick=""> -->
-
     <div id='question'>
-        <p>
-            최근 변을 본 기간은?
-        </p>
-        <input type="radio" name="option" value="1일"> 1일 
-        <input type="radio" name="option" value="2-3일"> 2일 
-        <input type="radio" name="option" value="3일 초과"> 3일 
-        <br>
+        {% autoescape off %}
+            {{ html }}
+        {% endautoescape %}
     </div>
     <div id='n_q'>
         <input type="button" value="go" onclick="moddiv()">
     </div>
+    <form id='forsend' action="{% url 'result' %}" method="POST">
+        {% csrf_token %}
+    </form>
 
 </body>
 </html>
